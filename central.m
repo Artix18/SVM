@@ -1,11 +1,14 @@
 function [w,z] = central(X,Y,C,t,w0,z0)
 
-m=size(w0,1);
+n=size(w0,1);
+m=size(X,1);
 epsilon = 0.0001;
 w=w0;
 z=z0;
-hessi=zeros(2*m,2*m);
-grad=zeros(2*m,1);
+hessi=zeros(n+m,n+m);
+grad=zeros(n+m,1);
+
+NN = max(n,m);
 
 while(true)
     precalc=zeros(m,1);
@@ -16,29 +19,42 @@ while(true)
         %X(i,:) = X(i,:)/precalc(i);
     end
     
-	for i = 1:(m)
-        grad(i)=t*w(i);
-        grad(i+m)=-1/z(i) +t*C - 1/precalc(i);
-		for j=1:(m)
-			%premier cas : wi wj
+	for i = 1:(n+m)
+        if(i <= n)
+            grad(i)=t*w(i);
+        else
+            grad(i)=-1/z(i-n) +t*C - 1/precalc(i-n);
+        end
+		for j=1:(n+m)
+            %%% HESSIENNE %%%
+			%premier cas : wi wj; i <= n et j <= n !!
 			%hessi(i,j) = X(:,i)'*X(:,j) + (i==j)*t;
-            hessi(i,j)=(i==j)*t;
-            for k=1:m
-                hessi(i,j) = hessi(i,j) + X(k,i)*X(k,j)/(precalc(k)^2);
-            end
-            %deuxi?me cas : zi zj
-            hessi(i+m, j+m) = (i==j)*(1/(z(i)*z(i)) + 1. /(precalc(i) ^ 2));
+            if i <= n && j <= n
+                hessi(i,j)=(i==j)*t;
+                for k=1:m
+                   hessi(i,j) = hessi(i,j) + X(k,i)*X(k,j)/(precalc(k)^2);
+                end
+            elseif i > n && j > n
+            %deuxi?me cas : zi zj : i,j > n
+                hessi(i, j) = (i==j)*(1/(z(i-n)*z(i-n)) + 1. /(precalc(i-n) ^ 2));
             %for p=1:m
             %    hessi(i+m, j+m) = hessi(i+m, j+m) + 1./(precalc(p)*precalc(p));
             %end
+            elseif i <= n && j > n
             
             %troisi?me cas : wi zj
-            hessi(i,j+m) = Y(j)*X(j,i)/(precalc(j)^2);
-            hessi(i+m, j) = hessi(i, j+m);
+            hessi(i,j) = Y(j-n)*X(j-n,i)/(precalc(j-n)^2);
+            %hessi(i+m, j) = hessi(i, j+m);
             
-            %calc du grad i
-            grad(i) = grad(i) - Y(j)*X(j,i)/precalc(j);
-            %grad(i+m) = grad(i+m) - 1/precalc(j);
+            else % i>n et j<=n
+                hessi(i,j) = hessi(j,i);
+            end
+            
+            %%% GRAD %%%
+            if i <= n && j <= m
+                jj = j;
+                grad(i) = grad(i) - Y(jj)*X(jj,i)/precalc(jj);
+            end
 		end
     end
     
@@ -56,12 +72,13 @@ while(true)
     sz=1;
     alpha=1/4;
     beta=1/2;
-    while (evalf(X,Y,C,t,w+sz*dx(1:m),z+sz*dx((m+1):(2*m))) >= evalf(X,Y,C,t,w,z) + alpha*sz*grad'*dx)
+    while (evalf(X,Y,C,t,w+sz*dx(1:n),z+sz*dx((n+1):((n+m)))) >= evalf(X,Y,C,t,w,z) + alpha*sz*grad'*dx)
         sz=beta*sz;
+        %sz
     end
     %x = x+sz*dx;
-    w  = w+sz*dx(1:m);
-    z  = z+sz*dx((m+1):(2*m));
+    w  = w+sz*dx(1:n);
+    z  = z+sz*dx((n+1):(n+m));
 end
 
 end

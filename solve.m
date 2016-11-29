@@ -1,8 +1,9 @@
 function [w,z] = solve(X, Y, C)
 
 m=size(X,1);
+n=size(X,2);
 epsilon = 0.01;
-w=zeros(m,1);
+w=zeros(n,1);
 z=2*ones(m,1);
 
 %trouver un pt strict faisable, prendre z tr??s grand ou (w=0 et z>1)
