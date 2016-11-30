@@ -1,4 +1,4 @@
-function [w,z,lambdaDual] = solve(X, Y, C)
+function [w,z,lambdaDual,Xstep] = solve(X, Y, C)
 
 m=size(X,1);
 n=size(X,2);
@@ -11,15 +11,20 @@ lambdaDual=zeros(n+m,1);
 
 t=1;
 mu=10;
+%nbSteps=1;
+Xstep=[[w' z']];
 
 while true
 	[w2,z2] = central(X,Y,C,t,w,z);
 	w=w2;
 	z=z2;
     
-	if (m/t < epsilon)
+    Xstep = [Xstep; [w' z']];
+    
+    if(m/t < epsilon)
 		break;
     end
+
 	t = t*mu;
 end
 
@@ -30,5 +35,5 @@ end
 for i = n+1:(n+m)
     lambdaDual(i) = 1/(t*z(i-n));
 end
-	
+
 end
