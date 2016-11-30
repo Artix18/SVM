@@ -1,17 +1,18 @@
 function [w,z] = central(X,Y,C,t,w0,z0)
 
-n=size(w0,1);
+n=size(X,2);
 m=size(X,1);
 epsilon = 0.0001;
 w=w0;
 z=z0;
-hessi=zeros(n+m,n+m);
-grad=zeros(n+m,1);
+
 
 NN = max(n,m);
 
 while(true)
     precalc=zeros(m,1);
+    hessi=zeros(n+m,n+m);
+    grad=zeros(n+m,1);
     
     for i = 1:m
         precalc(i) = Y(i)*(X(i,:)*w) + z(i) - 1;
@@ -58,9 +59,9 @@ while(true)
 		end
     end
     
-    for i = 1:m
+    %for i = 1:m
         %X(i,:) = X(i,:)*precalc(i);
-    end
+    %end
     
     invhess = inv(hessi);
     %x  = [w; z];
