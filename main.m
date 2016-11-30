@@ -1,9 +1,9 @@
 m=100; %100 pts
 %n=2; %2 dimensions
-C=5; %meilleurs resultats avec C grand, (20, 50 ou 100)
+C=100; %meilleurs resultats avec C grand, (20, 50 ou 100)
 
-a=1/rand()+100;
-b=1/rand()+100;
+a=1/rand();
+b=1/rand();
 sigma=[1 0; 0 1];
 
 pts1=mvnrnd([a;b], sigma,m/2);
@@ -13,7 +13,7 @@ X = [pts1; pts2];
 X = [ones(m,1) X]; %add cst
 Y = 2*[zeros(m/2, 1); ones(m/2,1)]-1;
 
-[w,z]=solve(X,Y,C);
+[w,z,lambdaDual]=solve(X,Y,C);
 
 nbOk = 0;
 for i = 1:m
