@@ -1,6 +1,6 @@
 m=100; %100 pts
 %n=2; %2 dimensions
-n=3;
+n=3; %pour avoir un terme affine j'imagine
 C=100; %meilleurs resultats avec C grand, (20, 50 ou 100)
 
 a=1/rand();
@@ -15,6 +15,7 @@ X = [ones(m,1) X]; %add cst
 Y = 2*[zeros(m/2, 1); ones(m/2,1)]-1;
 
 [w,z,lambdaDual,Xstep]=solve(X,Y,C);
+[w,z]=solveCVX(X,Y,C);
 
 nbOk = 0;
 for i = 1:m
