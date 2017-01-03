@@ -14,7 +14,7 @@ n=3; %pour avoir un terme affine
 %sigma2=sigma1;
 
 %test pour l'une des gaussienne ??tal??e vers la premi??re
-a=7; b=0.01;
+a=5; b=0.01;
 sigma1=[1 0; 0 1];
 sigma2=[8 0; 0 1];
 %sigma1=sigma2;
@@ -26,14 +26,15 @@ X = [pts1; pts2];
 X = [ones(m,1) X]; %add cst
 Y = 2*[zeros(m/2, 1); ones(m/2,1)]-1;
 
-Clist = [0.01; 0.1; 1; 10; 100; 1000; 100000]; %C petit sous-apprend, C grand sur-apprend
+Clist = [0.001; 0.003; 0.01; 0.03; 0.05; 0.1; 0.3; 1; 10; 100; 1000; 1000000]; 
+%C petit sous-apprend, C grand sur-apprend
 
 for C = Clist'
 
 s = sprintf('C = %f', C);
 s
-[w,z,lambdaDual,Xstep]=solve(X,Y,C);
-%[w,z]=solveCVX(X,Y,C);
+%[w,z,lambdaDual,Xstep]=solve(X,Y,C);
+[w,z]=solveCVX(X,Y,C);
 
 nbOk = 0;
 for i = 1:m
