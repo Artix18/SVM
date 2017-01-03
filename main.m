@@ -1,7 +1,6 @@
 m=100; %100 pts
 %n=2; %2 dimensions
 n=3; %pour avoir un terme affine
-C=100; %C petit sous-apprend, C grand sur-apprend
 
 %test moyenne al??atoire
 %a=1/rand();
@@ -27,6 +26,12 @@ X = [pts1; pts2];
 X = [ones(m,1) X]; %add cst
 Y = 2*[zeros(m/2, 1); ones(m/2,1)]-1;
 
+Clist = [0.01; 0.1; 1; 10; 100; 1000; 100000]; %C petit sous-apprend, C grand sur-apprend
+
+for C = Clist'
+
+s = sprintf('C = %f', C);
+s
 [w,z,lambdaDual,Xstep]=solve(X,Y,C);
 %[w,z]=solveCVX(X,Y,C);
 
@@ -47,7 +52,7 @@ S = sprintf('Erreur entrainement : %f \n', (1-nbOk/m)*100);
 disp(S);
 %nbOk/m*100
 
-figure(1);
+figure;
 scatter(X(1:m/2,2), X(1:m/2,3), 'o');
 hold on;
 scatter(X(m/2+1:m,2), X(m/2+1:m,3), 'x');
@@ -57,6 +62,8 @@ droite=-1./w(3) * (w(2)*xpts+w(1));
 plot(xpts, droite);
 droite2=((a^2+b^2)/2-xpts*a)/b;
 plot(xpts, droite2);
+
+title(s);
 legend('Donnees classe 1', 'Donnees classe 2', 'Droite du SVM', 'Mediatrice du segment [mu1; mu2]');
 hold off;
 
@@ -93,5 +100,8 @@ end
 S = sprintf('Erreur de test : %f \n', (1-nbreussi/nbtests)*100);
 disp(S);
 
-figure(2);
+figure;
 semilogy(0:(nbSteps-1), gaps);
+title(s);
+
+end
