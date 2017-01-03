@@ -45,6 +45,7 @@ droite=-1./w(3) * (w(2)*xpts+w(1));
 plot(xpts, droite);
 droite2=((a^2+b^2)/2-xpts*a)/b;
 plot(xpts, droite2);
+legend('Donnees classe 1', 'Donnees classe 2', 'Droite du SVM', 'Mediatrice du segment [mu1; mu2]');
 hold off;
 
 nbSteps=size(Xstep,1);
