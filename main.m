@@ -1,15 +1,27 @@
 m=100; %100 pts
 %n=2; %2 dimensions
 n=3; %pour avoir un terme affine
-C=1000; %meilleurs resultats avec C grand, (20, 50 ou 100)
+C=100; %C petit sous-apprend, C grand sur-apprend
 
-a=1/rand();
-b=1/rand();
-a=2; b=2;
-sigma=[1 0; 0 1];
+%test moyenne al??atoire
+%a=1/rand();
+%b=1/rand();
+%sigma1=[1 0; 0 1];
+%sigma2=sigma1;
 
-pts1=mvnrnd([a;b], sigma,m/2);
-pts2=mvnrnd([0;0], sigma,m/2);
+%test canonique
+%a=2; b=2;
+%sigma1=[1 0; 0 1];
+%sigma2=sigma1;
+
+%test pour l'une des gaussienne ??tal??e vers la premi??re
+a=7; b=0.01;
+sigma1=[1 0; 0 1];
+sigma2=[8 0; 0 1];
+%sigma1=sigma2;
+
+pts1=mvnrnd([0;0], sigma1,m/2);
+pts2=mvnrnd([a;b], sigma2,m/2);
 
 X = [pts1; pts2];
 X = [ones(m,1) X]; %add cst
@@ -31,7 +43,7 @@ for i = 1:m
         nbOk = nbOk+1;
     end
 end
-S = sprintf('Pourcentage correct : %f\n', nbOk/m*100);
+S = sprintf('Erreur entrainement : %f \n', (1-nbOk/m)*100);
 disp(S);
 %nbOk/m*100
 
@@ -71,15 +83,15 @@ end
 nbtests=10000;
 nbreussi=0;
 for i=1:nbtests/2
-    if ([1 mvnrnd([0;0], sigma)]*w>0)
+    if ([1 mvnrnd([0;0], sigma1)]*w<0)
         nbreussi=nbreussi+1;
     end
-    if ([1 mvnrnd([a;b], sigma)]*w<0)
+    if ([1 mvnrnd([a;b], sigma2)]*w>0)
         nbreussi=nbreussi+1;
     end
 end
-S = sprintf('Pourcentage sur les tests : %f\n', nbreussi*100/nbtests);
+S = sprintf('Erreur de test : %f \n', (1-nbreussi/nbtests)*100);
 disp(S);
 
 figure(2);
-plot(0:(nbSteps-1), gaps);
+semilogy(0:(nbSteps-1), gaps);
