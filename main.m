@@ -1,13 +1,14 @@
 m=100; %100 pts
 %n=2; %2 dimensions
 n=3; %pour avoir un terme affine
-C=10; %meilleurs resultats avec C grand, (20, 50 ou 100)
+C=1000; %meilleurs resultats avec C grand, (20, 50 ou 100)
 
 a=1/rand();
 b=1/rand();
+a=2; b=2;
 sigma=[1 0; 0 1];
 
-pts1=mvnrnd([2;2], sigma,m/2);
+pts1=mvnrnd([a;b], sigma,m/2);
 pts2=mvnrnd([0;0], sigma,m/2);
 
 X = [pts1; pts2];
@@ -42,7 +43,7 @@ hold on;
 xpts = -20:0.5:20;
 droite=-1./w(3) * (w(2)*xpts+w(1));
 plot(xpts, droite);
-droite2=2-xpts;
+droite2=((a^2+b^2)/2-xpts*a)/b;
 plot(xpts, droite2);
 hold off;
 
@@ -65,6 +66,19 @@ for i = 1:nbSteps
     
     gaps(i)=dualityGap;
 end
+
+nbtests=10000;
+nbreussi=0;
+for i=1:nbtests/2
+    if ([1 mvnrnd([0;0], sigma)]*w>0)
+        nbreussi=nbreussi+1;
+    end
+    if ([1 mvnrnd([a;b], sigma)]*w<0)
+        nbreussi=nbreussi+1;
+    end
+end
+S = sprintf('Pourcentage sur les tests : %f\n', nbreussi*100/nbtests);
+disp(S);
 
 figure(2);
 plot(0:(nbSteps-1), gaps);
